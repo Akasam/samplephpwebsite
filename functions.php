@@ -81,6 +81,24 @@ function checkRequiredVersions()
 
     if(strpos($php_version, $php_required_version) === false)
         die("Wrong PHP Version");
+
+    $extensions = config('php_modules');
+    foreach ($extensions as $extension) {
+        if(!extension_loaded($extension))
+            die("Missing PHP Extension");
+    }
+
+    $mysqli = new mysqli("db", config('db_user'), config('db_password'));
+    if (mysqli_connect_errno()) {
+        printf("Connect failed: %s\n", mysqli_connect_error());
+        exit();
+    }
+    $mariadb_version = $mysqli->server_info;
+    $mariadb_required_version = config('mariadb_version');
+    $mysqli->close();
+
+    if(strpos($mariadb_version, $mariadb_required_version) === false)
+        die("Wrong MariaDB Version");
 }
 
 /**
